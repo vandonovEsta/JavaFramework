@@ -1,6 +1,7 @@
 package api.clients;
 
 import io.restassured.RestAssured;
+import io.restassured.http.Header;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.http.Method;
@@ -19,15 +20,13 @@ public abstract class BaseClient {
     protected RequestSpecification createRequest(String endpoint, Method method, Map<String, String> headers){
         RequestSpecification request = RestAssured
                 .given()
+                .contentType("application/json")
                 .relaxedHTTPSValidation() //Used for test environments, if you need certificate validation comment this
-                .basePath(endpoint)
-                .log().method()
-                .log().uri();
+                .basePath(endpoint);
 
         if(headers != null){
             request.headers(headers);
         }
-
         return  request;
     }
 
@@ -48,9 +47,7 @@ public abstract class BaseClient {
         }
     }
 
-    protected Response executeRequestWithLogs(RequestSpecification request, String endpoint, Method method) {
-        System.out.println("Request: " + method.name() + " " + baseUrl + endpoint);
-
+    protected Response executeRequestWithLogs(RequestSpecification request, Method method) {
         request.log().all();
 
         Response response = request.request(method);
@@ -59,5 +56,16 @@ public abstract class BaseClient {
         response.then().log().all();
 
         return response;
+    }
+
+    protected RequestSpecification addQueryParams(RequestSpecification request, Map<String, String> queryParams) {
+        if (queryParams != null && !queryParams.isEmpty()) {
+            request.queryParams(queryParams);
+        }
+        return request;
+    }
+
+    protected <T> T mapResponse(Response response, Class<T> responseType) {
+        return response.as(responseType);
     }
 }

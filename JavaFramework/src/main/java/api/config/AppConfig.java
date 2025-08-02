@@ -13,5 +13,7 @@ public class AppConfig {
         return config.get("baseUrl");
     }
 
+    public String getBoardsPath(){return config.get("boardsPath");}
+    public String getMembersPath(){return config.get("membersPath");}
     //Add getters for other configuration properties
 }
