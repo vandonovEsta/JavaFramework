@@ -12,7 +12,7 @@ public class BoardRequestDto {
     @NotNull
     private String name;
     private boolean defaultLabels;
-    private  boolean defaultLists;
+    private boolean defaultLists;
     private String desc;
     private String idOrganization;
     private String idBoardSource;

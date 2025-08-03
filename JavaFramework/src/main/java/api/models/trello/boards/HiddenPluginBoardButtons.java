@@ -1,6 +1,5 @@
 package api.models.trello.boards;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

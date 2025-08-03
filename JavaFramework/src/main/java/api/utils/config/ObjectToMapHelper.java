@@ -1,20 +1,19 @@
 package api.utils.config;
 
-import api.clients.trello.TrelloClient;
-
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ObjectToMapHelper {
     private static ObjectToMapHelper instance;
-    private ObjectToMapHelper(){
+
+    private ObjectToMapHelper() {
 
     }
 
-    public static ObjectToMapHelper getInstance(){
+    public static ObjectToMapHelper getInstance() {
 
-        if(instance == null){
+        if (instance == null) {
             instance = new ObjectToMapHelper();
         }
 

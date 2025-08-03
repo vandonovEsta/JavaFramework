@@ -1,63 +1,94 @@
 package api.services;
 
-import api.clients.trello.TrelloClient;
-import api.config.AppConfig;
 import api.models.trello.boards.BoardRequestDto;
 import api.models.trello.boards.BoardResponseDto;
+import api.models.trello.lists.ListResponseDto;
 import api.utils.config.ObjectToMapHelper;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TrelloBoardService {
-    private String baseUrl;
-    private AppConfig config;
-    private TrelloClient trelloClient;
+import static api.constants.HttpStatusCodes.OK;
 
-    public TrelloBoardService(){
-        config = new AppConfig();
-        baseUrl = config.getBaseUrl();
-        trelloClient = TrelloClient.getInstance(baseUrl);
+public class TrelloBoardService extends BaseService {
+
+    public TrelloBoardService() {
+        super();
     }
 
     //TODO: remove me
-    private Map<String, String> getApiKeyAndToken(){
-        Map<String, String>map =  new HashMap<>();
+    private Map<String, String> getApiKeyAndToken() {
+        Map<String, String> map = new HashMap<>();
         map.put("key", System.getenv("TRELLO_API_KEY"));
         map.put("token", System.getenv("TRELLO_API_TOKEN"));
         return map;
     }
 
-    public BoardResponseDto createBoard(BoardRequestDto requestParams){
-        RequestSpecification requestSpecification =  trelloClient.createRequest(config.getBoardsPath(), Method.POST, null);
+    public BoardResponseDto createBoard(BoardRequestDto requestParams) {
+        String endpoint = endpointBuilder
+                .getBoardsPath()
+                .buildEndpoint();
+        trelloClient.createRequest(endpoint, null);
         Map<String, String> requestQueryParams = new HashMap<>(ObjectToMapHelper.getInstance().objectToQueryParams(requestParams));
-        trelloClient.addQueryParams(requestSpecification, requestQueryParams);
-        Response response = trelloClient.executeRequestWithLogs(requestSpecification, Method.POST);
+        trelloClient.addQueryParams(requestQueryParams);
+        Response response = trelloClient.executeRequestWithLogs(Method.POST, OK);
+        response.then().statusCode(200); //TODO: move status codes in constant class
         return response.as(BoardResponseDto.class);
     }
 
-    public List<BoardResponseDto> getAllBoards(){
-        RequestSpecification requestSpecification = trelloClient.createRequest(config.getMembersPath() +  config.getBoardsPath(), Method.GET, null);
-        trelloClient.addQueryParams(requestSpecification,null);
-        return trelloClient.executeRequestWithLogs(requestSpecification, Method.GET).as(new TypeRef<List<BoardResponseDto>>() {});
+    public List<BoardResponseDto> getAllBoards() {
+        String endpoint = endpointBuilder
+                .getMembersPath()
+                .getBoardsPath()
+                .buildEndpoint();
+        trelloClient.createRequest(endpoint, null);
+        trelloClient.addQueryParams(null);
+        return trelloClient.executeRequestWithLogs(Method.GET, OK).as(new TypeRef<List<BoardResponseDto>>() {
+        });
 
     }
 
-    public void deleteBoard(BoardResponseDto boardsToDelete){
-        RequestSpecification requestSpecification = trelloClient.createRequest(config.getBoardsPath() + boardsToDelete.getId() + "/", Method.GET, null);
-        trelloClient.addQueryParams(requestSpecification,null);
-        trelloClient.executeRequestWithLogs(requestSpecification, Method.DELETE);
+    public void deleteBoard(BoardResponseDto boardsToDelete) {
+        String endpoint = endpointBuilder
+                .getBoardsPath()
+                .setEndpointValue(boardsToDelete.getId())
+                .buildEndpoint() + "/";
+        trelloClient.createRequest(endpoint, null);
+        trelloClient.addQueryParams(null);
+        trelloClient.executeRequestWithLogs(Method.DELETE, OK);
 
     }
 
-    public void deleteBoards(List<BoardResponseDto> boards){
-        for (BoardResponseDto board : boards){
+    public void deleteBoards(List<BoardResponseDto> boards) {
+        for (BoardResponseDto board : boards) {
             deleteBoard(board);
         }
+    }
+
+    public BoardResponseDto getBoard(String boardId) {
+
+        String endpoint = endpointBuilder
+                .getBoardsPath()
+                .setEndpointValue(boardId)
+                .buildEndpoint();
+        trelloClient.createRequest(endpoint, null);
+        Response response = trelloClient.executeRequestWithLogs(Method.GET, OK);
+        return response.as(BoardResponseDto.class);
+    }
+
+    public List<ListResponseDto> getListsOnBoard(String boardId) {
+        String endpoint = endpointBuilder
+                .getBoardsPath()
+                .setEndpointValue(boardId)
+                .getListsPath()
+                .buildEndpoint();
+        trelloClient.createRequest(endpoint, null);
+        Response response = trelloClient.executeRequestWithLogs(Method.GET, OK);
+        return response.as(new TypeRef<List<ListResponseDto>>() {
+        });
     }
 }
