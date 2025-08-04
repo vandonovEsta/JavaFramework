@@ -17,4 +17,12 @@ public class AppConfig {
     public String getUiUrl(){
         return config.get("uiUrl");
     }
+
+    public String getUserName(){
+        return config.get("userName");
+    }
+
+    public String getPassword(){
+        return config.get("password");
+    }
 }
