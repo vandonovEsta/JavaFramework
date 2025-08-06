@@ -17,3 +17,10 @@ To execute the test suite:
 ```bash
 mvn test
 ```
+
+For the UI test to work you need to set
+uiUrl
+userName
+password
+
+In config.properties

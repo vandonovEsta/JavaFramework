@@ -12,6 +12,10 @@ public class DriverFactory {
     private static final ThreadLocal<WebDriver> driver = new ThreadLocal<>();
 
     public static WebDriver getDriver() {
+        if(driver.get() == null){
+            //TODO: manage browser type from config
+            initDriver("chrome");
+        }
         return driver.get();
     }
 

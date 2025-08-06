@@ -1,18 +1,15 @@
-package ui.pages;
+package ui.models.mapper;
 
-import core.config.AppConfig;
 import org.openqa.selenium.WebDriver;
 import ui.driver.DriverFactory;
 import ui.elements.ElementFactory;
 
-public abstract class BasePage {
+public class BaseMapper {
     protected WebDriver driver;
-    protected AppConfig appConfig;
     protected ElementFactory elementFactory;
 
-    protected BasePage(){
+    protected BaseMapper(){
         driver = DriverFactory.getDriver();
-        appConfig = new AppConfig();
         elementFactory = new ElementFactory(driver);
     }
 }
